@@ -15,7 +15,5 @@ Quarto enables you to weave together content and executable code into a finished
 -For each fleet size we will give a table with one row per station 
 
 -   Each table can include (Station ID, Recommended starting bike)
-
-<!-- -->
-
+-   
 -   
