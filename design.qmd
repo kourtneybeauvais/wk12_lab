@@ -8,19 +8,14 @@ editor: visual
 
 Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
 
-## Running Code
+## **Sketching the Design**
 
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+-Tables for 3 different fleet size
 
-```{r}
-1 + 1
-```
+-For each fleet size we will give a table with one row per station 
 
-You can add options to executable code like this
+-   Each table can include (Station ID, Recommended starting bike)
 
-```{r}
-#| echo: false
-2 * 2
-```
+<!-- -->
 
-The `echo: false` option disables the printing of code (only output is displayed).
+-   aaa
