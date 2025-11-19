@@ -10,7 +10,7 @@ Quarto enables you to weave together content and executable code into a finished
 
 ## **Sketching the Design**
 
--Tables for 3 different fleet size
+-Tables for 3 different fleet size (50, 75, 100)
 
 -For each fleet size we will give a table with one row per station 
 
@@ -18,4 +18,4 @@ Quarto enables you to weave together content and executable code into a finished
 
 <!-- -->
 
--   aaa
+-   
