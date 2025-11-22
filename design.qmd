@@ -11,11 +11,15 @@ Before coding, create a one‑page design document and have it approved by the i
 <<<<<<< Updated upstream
 ## **Sketching the Design**
 
--Tables for 3 different fleet size
+-Tables for 3 different fleet size (50, 75, 100)
 
 -For each fleet size we will give a table with one row per station 
 
 -   Each table can include (Station ID, Recommended starting bike)
+<<<<<<< HEAD
+-   
+-   
+=======
 
 <!-- -->
 
@@ -38,3 +42,4 @@ Before coding, create a one‑page design document and have it approved by the i
 
 5.  Refine by considering where you could minimize redundancy or update the inputs/outputs to improve your design.
 >>>>>>> Stashed changes
+>>>>>>> ec9aebd205e01b95b58613c73f1d14c1e7065fd9
