@@ -48,4 +48,4 @@ nhpp <- function(df) {
   return(results)
 }
 
-rates_df2 <- nhpp(bike)
+rates_df <- nhpp(bike)
