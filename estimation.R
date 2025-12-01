@@ -4,7 +4,7 @@ library(lubridate)
 
 #Loading the data
 
-bike <- read.csv("~/Downloads/sample_bike.csv")
+
 
 nhpp <- function(df) {
   # only keep real trips
@@ -48,4 +48,4 @@ nhpp <- function(df) {
   return(results)
 }
 
-rates_df <- nhpp(bike)
+
