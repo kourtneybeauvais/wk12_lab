@@ -99,11 +99,10 @@ simulate_demand <- function(rates_df, seed = 123) {
         }
       }
   }
-  sim_arrivals <- 
-    if (nrow(sim_arrivals) > 1) {
-    sim_arrivals <- sim_arrivals[-1,]
+  if (nrow(sim_arrivals) > 1) {
+    sim_arrivals <- sim_arrivals[-1, ]
   } else {
-    sim_arrivals <- sim_arrivals[0, ]   # keep structure but 0 rows
+    sim_arrivals <- sim_arrivals[FALSE, ]  
   }
   sim_arrivals <- sim_arrivals[order(sim_arrivals$start_time),]
   return(sim_arrivals)

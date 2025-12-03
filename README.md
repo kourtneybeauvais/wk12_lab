@@ -6,9 +6,8 @@ The work follows the design approved in Step 1 and is written in modular R scrip
 Project Structure:
 
 estimation.R – Loads data and estimates hourly arrival rates (μ̂) using NHPP methods.
-simulation.R – Simulates bike usage for a day using estimated rates.
+simulation.R – Simulates bike demand and actual trips for a day using estimated rates.
 placement.R – Builds initial allocation candidates and selects the best-performing one.
-utils.R – Small helper functions.
 test.R – Unit tests for main functions.
 
 
@@ -16,8 +15,8 @@ How It Works:
 
 Load & clean data
 Estimate hourly arrival rates per station pair
-Simulate daily usage across multiple replications
-Evaluate allocation strategies
+Simulate daily usage across each station pair for hours 0-23
+Produce, evaluate, and select allocation strategies
 Output recommended starting bikes per station for each fleet size
 
 

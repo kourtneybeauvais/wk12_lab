@@ -17,7 +17,7 @@ source("simulation.R")
 optimize_placement <- function(sim_df, n_iter = 200, fleet_size) {
   
   initialize_placement <- function(sim_df, fleet_size) {
-    stations <- sort(unique(sim_df$start_station))
+    stations <- sort(unique(as.integer(sim_df$start_station)))
     n <- length(stations)
     
     base <- floor(fleet_size / n)
@@ -29,61 +29,43 @@ optimize_placement <- function(sim_df, n_iter = 200, fleet_size) {
     )
   }
   
-  # starting point
   current <- initialize_placement(sim_df, fleet_size)
-  current_score <- mean(simulate_trips(current, sim_df)$results$successful_ride)
+  current_score <- mean(simulate_trips(sim_df, fleet_size)$results$successful_ride) # FIX
   
   history <- data.frame(iter = 0,
                         score = current_score,
                         placement = I(list(current)))
   
   for (iter in 1:n_iter) {
-    
-    # propose a new placement by moving ONE bike
     proposal <- current
     
-    # randomly choose donor and receiver stations
     donor <- sample(which(proposal$n_bikes > 0), 1)
     receiver <- sample(1:nrow(proposal), 1)
     while (receiver == donor) {
       receiver <- sample(1:nrow(proposal), 1)
     }
     
-    # apply the move
-    proposal$n_bikes[donor] <- proposal$n_bikes[donor] - 1
+    proposal$n_bikes[donor]   <- proposal$n_bikes[donor] - 1
     proposal$n_bikes[receiver] <- proposal$n_bikes[receiver] + 1
     
-    # evaluate new placement
-    new_score <- mean(simulate_trips(proposal, sim_df)$results$successful_ride)
+    new_score <- mean(simulate_trips(sim_df, fleet_size)$results$successful_ride)
     
-    # accept if better
     if (new_score > current_score) {
       current <- proposal
       current_score <- new_score
     }
     
-    # record iteration
-    history <- rbind(history, 
+    history <- rbind(history,
                      data.frame(iter = iter,
                                 score = current_score,
                                 placement = I(list(current))))
   }
+  
   best <- history %>% slice_max(score, n = 1)
   return(best)
 }
 
-# RUN ALL
 
-bike <- read.csv("~/Documents/GitHub/wk12_lab/sample_bike.csv")
 
-call_all_functions <- function(df, seed, fleet_size, n_iter) {
-  a <- nhpp(df)
-  b <- simulate_demand(a, seed)
-  c <- optimize_placement(b, n_iter, fleet_size)
-  
-  return(c)
-}
-
-call_all_functions(bike, 1234, 180, 100)
 
 
