@@ -72,3 +72,18 @@ optimize_placement <- function(sim_df, n_iter = 200, fleet_size) {
   return(best)
 }
 
+# RUN ALL
+
+bike <- read.csv("~/Documents/GitHub/wk12_lab/sample_bike.csv")
+
+call_all_functions <- function(df, seed, fleet_size, n_iter) {
+  a <- nhpp(df)
+  b <- simulate_demand(a, seed)
+  c <- optimize_placement(b, n_iter, fleet_size)
+  
+  return(c)
+}
+
+call_all_functions(bike, 1234, 180, 100)
+
+

@@ -4,7 +4,6 @@ source("estimation.R")
 source("simulation.R")
 source("optimization.R")
 
-bike <- read.csv("~/Documents/GitHub/wk12_lab/sample_bike.csv")
 
 test_df <- data.frame(
   start_station = c("A", "A", "A", "B", "B", "B", "B"),
