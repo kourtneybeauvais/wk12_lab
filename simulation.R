@@ -1,9 +1,9 @@
 # simulation
 library(tidyverse)
 
-simulate_arrival <- function(df) {
+simulate_demand <- function(rates_df) {
   # identify each station pairing and its mu_max
-  pairs <- df %>% 
+  pairs <- rates_df %>% 
     group_by(start_station, end_station) %>%
     summarize(mu_max = max(mu_hat), .groups = "drop")
   
@@ -20,7 +20,7 @@ simulate_arrival <- function(df) {
     pair_end <- pairs$end_station[i]
     pair_mu_max <- pairs$mu_max[i]
     for (j in 0:23) {
-      row <- subset(df, start_station == pair_start & end_station == pair_end & hour == j)
+      row <- subset(rates_df, start_station == pair_start & end_station == pair_end & hour == j)
       if (nrow(row) == 0) {
         mu <- 0
       } else {
@@ -79,5 +79,17 @@ simulate_arrival <- function(df) {
   sim_arrivals <- sim_arrivals[-1,]
   sim_arrivals <- sim_arrivals[order(sim_arrivals$start_time),]
   return(sim_arrivals)
-  }
+}
+
+sim_df <- simulate_demand(rates_df)
+
+init_placement <- data.frame(start_station = unique(sim_df$start_station), 
+                        n_bikes = rep(10, length(unique(sim_df$start_station))))
+
+simulate_trips <- function(placement_df, sim_df) {
+  
+
+}
+
+
 
