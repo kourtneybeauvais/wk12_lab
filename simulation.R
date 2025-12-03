@@ -83,13 +83,44 @@ simulate_demand <- function(rates_df) {
 
 sim_df <- simulate_demand(rates_df)
 
+# initial placement strategy:
+# 10 bikes per start station
 init_placement <- data.frame(start_station = unique(sim_df$start_station), 
                         n_bikes = rep(10, length(unique(sim_df$start_station))))
 
 simulate_trips <- function(placement_df, sim_df) {
   
-
+  sim_df$successful_ride <- 0
+  
+  for (i in 1:nrow(sim_df)) {
+    
+    start  <- sim_df$start_station[i]
+    end    <- sim_df$end_station[i]
+    
+    # index of start station in placement_df
+    j <- which(placement_df$start_station == start)
+    
+    if (length(j) == 1 && placement_df$n_bikes[j] > 0) {
+      
+      # remove one bike from start
+      placement_df$n_bikes[j] <- placement_df$n_bikes[j] - 1
+      
+      # add bike to destination
+      k <- which(placement_df$start_station == end)
+      if (length(k) == 1) {
+        placement_df$n_bikes[k] <- placement_df$n_bikes[k] + 1
+      }
+      sim_df$successful_ride[i] <- 1
+    } else {
+      sim_df$successful_ride[i] <- 0
+    }
+  }
+  
+  return(list(
+    results = sim_df,
+    final_placement = placement_df))
 }
+
 
 
 
