@@ -2,8 +2,6 @@ library(dplyr)
 # install.packages("lubridate")
 library(lubridate)
 
-bike <- read.csv("~/Downloads/sample_bike.csv")
-
 #' Estimate hourly NHPP (Non-Homogeneous Poisson Process) arrival rates
 #'
 #' This function takes raw bike-share trip data and computes estimated

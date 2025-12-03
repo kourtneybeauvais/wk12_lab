@@ -10,7 +10,8 @@ library(tidyverse)
 #'
 #' @param rates_df A data frame produced by nhpp(). Must include columns:
 #'   hour, start_station, end_station, mu_hat.
-#'
+#' @param seed Set seed for reproduceability. Integers like 123 or 4653
+#' 
 #' @return A data frame with simulated trips, containing:
 #'   \itemize{
 #'     \item{\code{hour}}{Hour of day (0–23)}
@@ -21,8 +22,10 @@ library(tidyverse)
 #'   }
 #'   
 
-simulate_demand <- function(rates_df) {
-  # identify each station pairing and its mu_max
+simulate_demand <- function(rates_df, seed = 123) {
+ set.seed(seed)
+  
+   # identify each station pairing and its mu_max
   pairs <- rates_df %>% 
     group_by(start_station, end_station) %>%
     summarize(mu_max = max(mu_hat), .groups = "drop")
@@ -96,18 +99,16 @@ simulate_demand <- function(rates_df) {
         }
       }
   }
-  sim_arrivals <- sim_arrivals[-1,]
+  sim_arrivals <- 
+    if (nrow(sim_arrivals) > 1) {
+    sim_arrivals <- sim_arrivals[-1,]
+  } else {
+    sim_arrivals <- sim_arrivals[0, ]   # keep structure but 0 rows
+  }
   sim_arrivals <- sim_arrivals[order(sim_arrivals$start_time),]
   return(sim_arrivals)
 }
 
-
-sim_df <- simulate_demand(rates_df)
-
-# initial placement strategy:
-# 10 bikes per start station
-init_placement <- data.frame(start_station = unique(sim_df$start_station), 
-                        n_bikes = rep(10, length(unique(sim_df$start_station))))
 
 #' Simulate bike movements through the system for one day
 #'
@@ -137,7 +138,22 @@ init_placement <- data.frame(start_station = unique(sim_df$start_station),
 #'   }
 #'   
 
-simulate_trips <- function(placement_df, sim_df) {
+simulate_trips <- function(sim_df, fleet_size) {
+  
+  initialize_placement <- function(sim_df, fleet_size) {
+    stations <- sort(unique(sim_df$start_station))
+    n <- length(stations)
+    
+    base <- floor(fleet_size / n)
+    remainder <- fleet_size %% n
+    
+    data.frame(
+      start_station = stations,
+      n_bikes = base + c(rep(1, remainder), rep(0, n - remainder))
+    )
+  }
+  
+  placement_df <- initialize_placement(sim_df, fleet_size)  
   
   sim_df$successful_ride <- 0
   
