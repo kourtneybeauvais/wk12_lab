@@ -2,10 +2,7 @@ library(dplyr)
 # install.packages("lubridate")
 library(lubridate)
 
-#Loading the data
-# ONE CHANGE
-
-
+bike <- read.csv("~/Downloads/sample_bike.csv")
 
 nhpp <- function(df) {
   # only keep real trips
@@ -37,7 +34,7 @@ nhpp <- function(df) {
     # merge trip counts and station activity 
     # if start_station not active, alpha = 0
     x_hat <- x_hat %>%
-      left_join(active_stations, by="start_station") %>%
+      left_join(active_stations, by = "start_station") %>%
       mutate(alpha = ifelse(is.na(alpha), 0, alpha),
              mu_hat = ifelse(alpha > 0, n_trips / alpha, 0),
              hour = hr)
@@ -45,8 +42,7 @@ nhpp <- function(df) {
     results <- rbind(results, x_hat)
   }
   results <- results %>%
-    select(hour, start_station, end_station, mu_hat, n_trips, alpha)
+    select(hour, start_station, end_station, mu_hat)
   return(results)
 }
-
 

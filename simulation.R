@@ -1,1 +1,83 @@
 # simulation
+library(tidyverse)
+
+simulate_arrival <- function(df) {
+  # identify each station pairing and its mu_max
+  pairs <- df %>% 
+    group_by(start_station, end_station) %>%
+    summarize(mu_max = max(mu_hat), .groups = "drop")
+  
+  complete_arrivals <- data.frame(hour = c(0),
+                                  start_station = c(0),
+                                  end_station = c(0),
+                                  mu_hat = c(0),
+                                  mu_max = c(0))
+  
+  # for each start/end station pairing,
+  # identify mu_max and mu_hat, including every hour 0-23 (complete data frame)
+  for (i in 1:nrow(pairs)) {
+    pair_start <- pairs$start_station[i]
+    pair_end <- pairs$end_station[i]
+    pair_mu_max <- pairs$mu_max[i]
+    for (j in 0:23) {
+      row <- subset(df, start_station == pair_start & end_station == pair_end & hour == j)
+      if (nrow(row) == 0) {
+        mu <- 0
+      } else {
+        mu <- row$mu_hat[1]
+        }
+      complete_arrivals <- rbind(complete_arrivals, 
+                                 data.frame(hour = j,
+                                            start_station = pair_start,
+                                            end_station = pair_end,
+                                            mu_max = pair_mu_max,
+                                            mu_hat = mu))
+
+    }
+  }
+  complete_arrivals <- complete_arrivals[-1,]
+  
+  sim_arrivals <- data.frame(hour = c(0),
+                             start_station = c(0),
+                             end_station = c(0),
+                             start_time = c(0),
+                             end_time = c(0))
+  
+  # simulate a day for each pair + thinning
+  for (i in 1:nrow(pairs)) {
+    time <- c(0)
+    pair_start <- pairs$start_station[i]
+    pair_end <- pairs$end_station[i]
+    pair_mu_max <- pairs$mu_max[i]
+    pair_subset <- subset(complete_arrivals, start_station == pair_start & end_station == pair_end)
+    while (time[length(time)] < 24) {
+      # possible next arrival
+      next_time <- time[length(time)] + rexp(1, rate = pair_mu_max)
+      
+      if (next_time >= 24) break
+      
+      time <- c(time, next_time)  # always move time forward
+      
+      # thinning probability
+      current_hour <- next_time - (next_time %% 1)
+      p <- subset(pair_subset, 
+                  hour == (time[length(time)] - (time[length(time)] %% 1)))$mu_hat/pair_mu_max
+      p <- ifelse(length(p) == 0, 0, p)
+      
+      # append only if it passes thinning
+      if (runif(1) < p) {
+        sim_arrivals <- rbind(sim_arrivals, data.frame(
+          hour = current_hour,
+          start_station = pair_start,
+          end_station = pair_end,
+          start_time = next_time,
+          end_time = next_time
+        ))
+        }
+      }
+  }
+  sim_arrivals <- sim_arrivals[-1,]
+  sim_arrivals <- sim_arrivals[order(sim_arrivals$start_time),]
+  return(sim_arrivals)
+  }
+
