@@ -3,6 +3,17 @@
 source("estimation.R")
 source("simulation.R")
 
+#' Optimization
+#' 
+#' This function iteratively optimizes the initial distribution of bikes across
+#' stations in order to maximize the fraction of successful simulated trips.
+#' At each iteration a single bike is moved from one station to another, and the 
+#' new placement is accepted only if it improves the simulated success rate.
+#'
+#' @param sim_df A data frame of simulated trips produced by simulate_demand().
+#' @param n_iter Integer. Number of optimization iterations to run.
+#' @param fleet_size Integer. Total number of bikes available for allocation.
+
 optimize_placement <- function(sim_df, n_iter = 200, fleet_size) {
   
   initialize_placement <- function(sim_df, fleet_size) {
@@ -61,4 +72,3 @@ optimize_placement <- function(sim_df, n_iter = 200, fleet_size) {
   return(best)
 }
 
-optimize_placement(sim_df, 50, 180)
