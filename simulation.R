@@ -1,6 +1,26 @@
 # simulation
 library(tidyverse)
 
+#' Simulate one full day of bike-trip demand using NHPP thinning
+#'
+#' This function uses the estimated rates (mu_hat) for each start–end station 
+#' pair to simulate trip arrival times throughout a 24-hour day. It first creates 
+#' a complete table of hourly rates for all station pairs, then uses thinning 
+#' with each pair's mu_max to generate realistic, time-varying arrival times.
+#'
+#' @param rates_df A data frame produced by nhpp(). Must include columns:
+#'   hour, start_station, end_station, mu_hat.
+#'
+#' @return A data frame with simulated trips, containing:
+#'   \itemize{
+#'     \item{\code{hour}}{Hour of day (0–23)}
+#'     \item{\code{start_station}}{Starting station ID}
+#'     \item{\code{end_station}}{Ending station ID}
+#'     \item{\code{start_time}}{Exact simulated arrival time (0–24, in hours)}
+#'     \item{\code{end_time}}{Same as start_time (no duration modeled yet)}
+#'   }
+#'   
+
 simulate_demand <- function(rates_df) {
   # identify each station pairing and its mu_max
   pairs <- rates_df %>% 
@@ -87,6 +107,34 @@ sim_df <- simulate_demand(rates_df)
 # 10 bikes per start station
 init_placement <- data.frame(start_station = unique(sim_df$start_station), 
                         n_bikes = rep(10, length(unique(sim_df$start_station))))
+
+#' Simulate bike movements through the system for one day
+#'
+#' This function takes an initial bike placement and a simulated list of trips,
+#' then processes each trip sequentially. A trip succeeds if the start station
+#' has at least one bike available. When successful, a bike is removed from the
+#' start station and added to the end station. The function tracks whether each
+#' simulated trip was successful and returns the updated placements.
+#'
+#' @param placement_df A data frame with at least:
+#'   \describe{
+#'     \item{start_station}{(character or numeric) Station ID}
+#'     \item{n_bikes}{(integer) Number of bikes initially at each station}
+#'   }
+#'
+#' @param sim_df A data frame of simulated demand from `simulate_demand()`,
+#'   containing at least:
+#'   \describe{
+#'     \item{start_station}{(character or numeric) Station where the trip starts}
+#'     \item{end_station}{(character or numeric) Destination station}
+#'   }
+#'
+#' @return A list with two elements:
+#'   \describe{
+#'     \item{results}{`sim_df` updated with a `successful_ride` column (0/1)}
+#'     \item{final_placement}{Updated placement_df showing final bike counts}
+#'   }
+#'   
 
 simulate_trips <- function(placement_df, sim_df) {
   
